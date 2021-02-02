@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Fast_Food;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
@@ -37,6 +33,7 @@ public class FastFood extends javax.swing.JFrame {
     private void initComponents() {
 
         PanelForName = new javax.swing.JPanel();
+        jTextField2 = new javax.swing.JTextField();
         panelForPizzaAndBurger = new javax.swing.JPanel();
         fieldofPizza = new javax.swing.JTextField();
         Menu3 = new javax.swing.JTextField();
@@ -103,20 +100,31 @@ public class FastFood extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Fast Food");
-        setPreferredSize(new java.awt.Dimension(1550, 880));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         PanelForName.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
+
+        jTextField2.setEditable(false);
+        jTextField2.setBackground(new java.awt.Color(204, 204, 204));
+        jTextField2.setFont(new java.awt.Font("Footlight MT Light", 1, 36)); // NOI18N
+        jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField2.setText("MAK Fast Food");
 
         javax.swing.GroupLayout PanelForNameLayout = new javax.swing.GroupLayout(PanelForName);
         PanelForName.setLayout(PanelForNameLayout);
         PanelForNameLayout.setHorizontalGroup(
             PanelForNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1516, Short.MAX_VALUE)
+            .addGroup(PanelForNameLayout.createSequentialGroup()
+                .addGap(91, 91, 91)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 1199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(226, Short.MAX_VALUE))
         );
         PanelForNameLayout.setVerticalGroup(
             PanelForNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 126, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelForNameLayout.createSequentialGroup()
+                .addContainerGap(24, Short.MAX_VALUE)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21))
         );
 
         getContentPane().add(PanelForName, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 1520, 130));
@@ -484,9 +492,9 @@ public class FastFood extends javax.swing.JFrame {
         panelForSoftDrinksAndMaggieLayout.setVerticalGroup(
             panelForSoftDrinksAndMaggieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelForSoftDrinksAndMaggieLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(14, 14, 14)
                 .addComponent(fieldofSoftDrinks, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelForSoftDrinksAndMaggieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Menu, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(QuantityBOught, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -515,7 +523,7 @@ public class FastFood extends javax.swing.JFrame {
                 .addGroup(panelForSoftDrinksAndMaggieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(checkCheeseMaggie, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textCheeseMaggie, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelForSoftDrinksAndMaggie, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 380, 640));
@@ -795,7 +803,6 @@ public class FastFood extends javax.swing.JFrame {
 
         buttonTotal.setFont(new java.awt.Font("Footlight MT Light", 0, 18)); // NOI18N
         buttonTotal.setText("Total");
-        buttonTotal.setActionCommand("Total");
         buttonTotal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonTotalActionPerformed(evt);
@@ -1524,9 +1531,6 @@ if(checkMayoneseBurger.isSelected())
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(FastFood.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FastFood().setVisible(true);
@@ -1571,6 +1575,7 @@ if(checkMayoneseBurger.isSelected())
     private javax.swing.JTextField fieldofPizza;
     private javax.swing.JTextField fieldofSoftDrinks;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JPanel panelForBilling;
     private javax.swing.JPanel panelForBillingCounter;
     private javax.swing.JPanel panelForDrinksAndIceCreams;
