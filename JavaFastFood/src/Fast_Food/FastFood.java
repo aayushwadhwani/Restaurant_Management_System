@@ -1,25 +1,54 @@
-
 package Fast_Food;
+
 import java.awt.event.KeyEvent;
 import javax.swing.*;
+import java.sql.*;
 
+//    
+//    
+////    int rs = st.executeUpdate(query);
 /**
  *
  * @author Aayush Wadhwani
  */
+class Jdbc {
+    
+    Connection con = null;
+    void connect() throws Exception {
+        String url = "jdbc:mysql://localhost:3306/restaurant";
+        String uname = "root1";
+        String pass = "Root1@root1";
+        con = DriverManager.getConnection(url, uname, pass);
+    }
+    void createorder(String payment_type){
+        try{
+//            String status = ;
+            String query = String.format("insert into user_order(order_date,payment_status) values(CURDATE(),'%s')",payment_type);
+            Statement st = con.createStatement();
+            int rs = st.executeUpdate(query);
+            System.out.println(rs+" rows effected");
+        }
+        catch(Exception ex){
+            System.out.println(ex);
+        }
+    }
+}
+
+
 public class FastFood extends javax.swing.JFrame {
-    double pepsi = 50, fanta = 45 , dew = 60 ;
-    double normal_maggie = 30 , cheese_maggie = 45;
-    double water = 20 , tea = 15 , coffee = 20;
-    double vanilla_icecream = 40 , chocklate_icecream = 45 , mellojello_icecream = 55;
-    double normal_pizza = 130 ,cheese_pizza = 180 , corn_pizza = 160;
-    double normal_burger = 40, mayonese_burger = 50;
-    double tax = 5 , total , change , cost;
+
+//    double pepsi = 50, fanta = 45, dew = 60;
+//    double normal_maggie = 30, cheese_maggie = 45;
+//    double water = 20, tea = 15, coffee = 20;
+//    double vanilla_icecream = 40, chocklate_icecream = 45, mellojello_icecream = 55;
+//    double normal_pizza = 130, cheese_pizza = 180, corn_pizza = 160;
+//    double normal_burger = 40, mayonese_burger = 50;
+    double tax = 5, total, change, cost;
     int itemDetails[] = new int[16];
-    /**
-     * Creates new form FastFood
-     */
-    public FastFood() {
+
+    double prices[] = {50, 45, 60, 30, 45, 20, 15, 20, 40, 45, 55, 130, 180, 160, 40, 50};
+    
+     public FastFood() {
         initComponents();
     }
 
@@ -88,6 +117,7 @@ public class FastFood extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         CashMethods = new javax.swing.JComboBox<>();
         textCashEntered = new javax.swing.JTextField();
+        submitButton = new javax.swing.JButton();
         panelForBillingCounter = new javax.swing.JPanel();
         textChange = new javax.swing.JTextField();
         textChangeAnswer = new javax.swing.JTextField();
@@ -828,6 +858,15 @@ public class FastFood extends javax.swing.JFrame {
             }
         });
 
+        submitButton.setFont(new java.awt.Font("Footlight MT Light", 0, 18)); // NOI18N
+        submitButton.setText("Submit");
+        submitButton.setEnabled(false);
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelForBillingLayout = new javax.swing.GroupLayout(panelForBilling);
         panelForBilling.setLayout(panelForBillingLayout);
         panelForBillingLayout.setHorizontalGroup(
@@ -840,9 +879,12 @@ public class FastFood extends javax.swing.JFrame {
                     .addGroup(panelForBillingLayout.createSequentialGroup()
                         .addGap(47, 47, 47)
                         .addGroup(panelForBillingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buttonTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(CashMethods, 0, 259, Short.MAX_VALUE)
-                            .addComponent(textCashEntered))
+                            .addComponent(CashMethods, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(textCashEntered)
+                            .addGroup(panelForBillingLayout.createSequentialGroup()
+                                .addComponent(buttonTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 50, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -854,9 +896,11 @@ public class FastFood extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(CashMethods, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textCashEntered, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                .addComponent(textCashEntered, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(buttonTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelForBillingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -962,28 +1006,22 @@ public class FastFood extends javax.swing.JFrame {
     }//GEN-LAST:event_fieldofSoftDrinksActionPerformed
 
     private void checkDewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkDewActionPerformed
-if(checkDew.isSelected())
-        {
+        if (checkDew.isSelected()) {
             textDew.setEnabled(true);
             textDew.requestFocus();
             textDew.setText("");
-        }
-        else
-        {
+        } else {
             textDew.setEnabled(false);
             textDew.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkDewActionPerformed
 
     private void checkCheeseMaggieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCheeseMaggieActionPerformed
-if(checkCheeseMaggie.isSelected())
-        {
+        if (checkCheeseMaggie.isSelected()) {
             textCheeseMaggie.setEnabled(true);
             textCheeseMaggie.requestFocus();
             textCheeseMaggie.setText("");
-        }
-        else
-        {
+        } else {
             textCheeseMaggie.setEnabled(false);
             textCheeseMaggie.setText("0");
         }        // TODO add your handling code here:
@@ -994,28 +1032,22 @@ if(checkCheeseMaggie.isSelected())
     }//GEN-LAST:event_fieldofMaggiesActionPerformed
 
     private void checkFantaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkFantaActionPerformed
-if(checkFanta.isSelected())
-        {
+        if (checkFanta.isSelected()) {
             textFanta.setEnabled(true);
             textFanta.requestFocus();
             textFanta.setText("");
-        }
-        else
-        {
+        } else {
             textFanta.setEnabled(false);
             textFanta.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkFantaActionPerformed
 
     private void checkMelloJelloIceCreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkMelloJelloIceCreamActionPerformed
-if(checkMelloJelloIceCream.isSelected())
-        {
+        if (checkMelloJelloIceCream.isSelected()) {
             textMelloJelloIcecream.setEnabled(true);
             textMelloJelloIcecream.requestFocus();
             textMelloJelloIcecream.setText("");
-        }
-        else
-        {
+        } else {
             textMelloJelloIcecream.setEnabled(false);
             textMelloJelloIcecream.setText("0");
         }        // TODO add your handling code here:
@@ -1041,9 +1073,8 @@ if(checkMelloJelloIceCream.isSelected())
     private void buttonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
         // TODO add your handling code here:
         frame = new JFrame("Exit");
-        if(JOptionPane.showConfirmDialog(frame,"You Want to Exit?","Exit",
-                JOptionPane.YES_NO_OPTION)==JOptionPane.YES_NO_OPTION)
-        {
+        if (JOptionPane.showConfirmDialog(frame, "You Want to Exit?", "Exit",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
             System.exit(0);
         }
     }//GEN-LAST:event_buttonExitActionPerformed
@@ -1105,14 +1136,14 @@ if(checkMelloJelloIceCream.isSelected())
         textCornPizza.setEnabled(false);
         textNormalBurger.setEnabled(false);
         textMayoneseBurger.setEnabled(false);
-        
+        total = 0;
+
     }//GEN-LAST:event_buttonResetActionPerformed
 
     private void textPepsiKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textPepsiKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textPepsiKeyTyped
@@ -1124,8 +1155,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textFantaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFantaKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textFantaKeyTyped
@@ -1133,8 +1163,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textDewKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textDewKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textDewKeyTyped
@@ -1142,8 +1171,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textWaterKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textWaterKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textWaterKeyTyped
@@ -1152,8 +1180,7 @@ if(checkMelloJelloIceCream.isSelected())
 
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textTeaKeyTyped
@@ -1161,8 +1188,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textCoffeeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textCoffeeKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textCoffeeKeyTyped
@@ -1170,8 +1196,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textVanillaIceCreamKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textVanillaIceCreamKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textVanillaIceCreamKeyTyped
@@ -1179,8 +1204,7 @@ if(checkMelloJelloIceCream.isSelected())
     private void textChocklateIceCreamKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textChocklateIceCreamKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textChocklateIceCreamKeyTyped
@@ -1188,24 +1212,21 @@ if(checkMelloJelloIceCream.isSelected())
     private void textMelloJelloIcecreamKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMelloJelloIcecreamKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textMelloJelloIcecreamKeyTyped
 
     private void textNormalMaggieKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNormalMaggieKeyTyped
-char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        char isNumber = evt.getKeyChar();
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }        // TODO add your handling code here:
     }//GEN-LAST:event_textNormalMaggieKeyTyped
 
     private void textCheeseMaggieKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textCheeseMaggieKeyTyped
-char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        char isNumber = evt.getKeyChar();
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }        // TODO add your handling code here:
     }//GEN-LAST:event_textCheeseMaggieKeyTyped
@@ -1213,8 +1234,7 @@ char isNumber = evt.getKeyChar();
     private void textCashEnteredKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textCashEnteredKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textCashEnteredKeyTyped
@@ -1222,8 +1242,7 @@ char isNumber = evt.getKeyChar();
     private void textNormalPizzaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNormalPizzaKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textNormalPizzaKeyTyped
@@ -1231,8 +1250,7 @@ char isNumber = evt.getKeyChar();
     private void textCheesePizzaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textCheesePizzaKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textCheesePizzaKeyTyped
@@ -1240,8 +1258,7 @@ char isNumber = evt.getKeyChar();
     private void textCornPizzaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textCornPizzaKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textCornPizzaKeyTyped
@@ -1249,8 +1266,7 @@ char isNumber = evt.getKeyChar();
     private void textNormalBurgerKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNormalBurgerKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textNormalBurgerKeyTyped
@@ -1258,57 +1274,47 @@ char isNumber = evt.getKeyChar();
     private void textMayoneseBurgerKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMayoneseBurgerKeyTyped
         // TODO add your handling code here:
         char isNumber = evt.getKeyChar();
-        if((isNumber== KeyEvent.VK_BACK_SPACE)||(isNumber==KeyEvent.VK_DELETE)||(!Character.isDigit(isNumber)))
-        {
+        if ((isNumber == KeyEvent.VK_BACK_SPACE) || (isNumber == KeyEvent.VK_DELETE) || (!Character.isDigit(isNumber))) {
             evt.consume();
         }
     }//GEN-LAST:event_textMayoneseBurgerKeyTyped
 
     private void checkPepsiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkPepsiActionPerformed
         // TODO add your handling code here:
-        if(checkPepsi.isSelected())
-        {
+        if (checkPepsi.isSelected()) {
             textPepsi.setEnabled(true);
             textPepsi.requestFocus();
             textPepsi.setText("");
-        }
-        else
-        {
+        } else {
             textPepsi.setEnabled(false);
             textPepsi.setText("0");
         }
     }//GEN-LAST:event_checkPepsiActionPerformed
 
     private void checkNormalMaggieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkNormalMaggieActionPerformed
-if(checkNormalMaggie.isSelected())
-        {
+        if (checkNormalMaggie.isSelected()) {
             textNormalMaggie.setEnabled(true);
             textNormalMaggie.requestFocus();
             textNormalMaggie.setText("");
-        }
-        else
-        {
+        } else {
             textNormalMaggie.setEnabled(false);
             textNormalMaggie.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkNormalMaggieActionPerformed
 
     private void checkWaterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkWaterActionPerformed
-if(checkWater.isSelected())
-        {
+        if (checkWater.isSelected()) {
             textWater.setEnabled(true);
             textWater.requestFocus();
             textWater.setText("");
-        }
-        else
-        {
+        } else {
             textWater.setEnabled(false);
             textWater.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkWaterActionPerformed
 
     private void textTeaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textTeaActionPerformed
-  // TODO add your handling code here:
+        // TODO add your handling code here:
     }//GEN-LAST:event_textTeaActionPerformed
 
     private void textCoffeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textCoffeeActionPerformed
@@ -1316,18 +1322,15 @@ if(checkWater.isSelected())
     }//GEN-LAST:event_textCoffeeActionPerformed
 
     private void textVanillaIceCreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textVanillaIceCreamActionPerformed
-   // TODO add your handling code here:
+        // TODO add your handling code here:
     }//GEN-LAST:event_textVanillaIceCreamActionPerformed
 
     private void checkTeaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkTeaActionPerformed
-if(checkTea.isSelected())
-        {
+        if (checkTea.isSelected()) {
             textTea.setEnabled(true);
             textTea.requestFocus();
             textTea.setText("");
-        }
-        else
-        {
+        } else {
             textTea.setEnabled(false);
             textTea.setText("0");
         }        // TODO add your handling code here:
@@ -1342,28 +1345,22 @@ if(checkTea.isSelected())
     }//GEN-LAST:event_textWaterActionPerformed
 
     private void checkCoffeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCoffeeActionPerformed
-if(checkCoffee.isSelected())
-        {
+        if (checkCoffee.isSelected()) {
             textCoffee.setEnabled(true);
             textCoffee.requestFocus();
             textCoffee.setText("");
-        }
-        else
-        {
+        } else {
             textCoffee.setEnabled(false);
             textCoffee.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkCoffeeActionPerformed
 
     private void checkVanillaIceCreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkVanillaIceCreamActionPerformed
-if(checkVanillaIceCream.isSelected())
-        {
+        if (checkVanillaIceCream.isSelected()) {
             textVanillaIceCream.setEnabled(true);
             textVanillaIceCream.requestFocus();
             textVanillaIceCream.setText("");
-        }
-        else
-        {
+        } else {
             textVanillaIceCream.setEnabled(false);
             textVanillaIceCream.setText("0");
         }        // TODO add your handling code here:
@@ -1374,136 +1371,125 @@ if(checkVanillaIceCream.isSelected())
     }//GEN-LAST:event_textChocklateIceCreamActionPerformed
 
     private void checkChocklateIceCreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkChocklateIceCreamActionPerformed
-if(checkChocklateIceCream.isSelected())
-        {
+        if (checkChocklateIceCream.isSelected()) {
             textChocklateIceCream.setEnabled(true);
             textChocklateIceCream.requestFocus();
             textChocklateIceCream.setText("");
-        }
-        else
-        {
+        } else {
             textChocklateIceCream.setEnabled(false);
             textChocklateIceCream.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkChocklateIceCreamActionPerformed
 
     private void checkNormalPizzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkNormalPizzaActionPerformed
-if(checkNormalPizza.isSelected())
-        {
+        if (checkNormalPizza.isSelected()) {
             textNormalPizza.setEnabled(true);
             textNormalPizza.requestFocus();
             textNormalPizza.setText("");
-        }
-        else
-        {
+        } else {
             textNormalPizza.setEnabled(false);
             textNormalPizza.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkNormalPizzaActionPerformed
 
     private void checkCheesePizzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCheesePizzaActionPerformed
-if(checkCheesePizza.isSelected())
-        {
+        if (checkCheesePizza.isSelected()) {
             textCheesePizza.setEnabled(true);
             textCheesePizza.requestFocus();
             textCheesePizza.setText("");
-        }
-        else
-        {
+        } else {
             textCheesePizza.setEnabled(false);
             textCheesePizza.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkCheesePizzaActionPerformed
 
     private void checkCornPizzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkCornPizzaActionPerformed
-if(checkCornPizza.isSelected())
-        {
+        if (checkCornPizza.isSelected()) {
             textCornPizza.setEnabled(true);
             textCornPizza.requestFocus();
             textCornPizza.setText("");
-        }
-        else
-        {
+        } else {
             textCornPizza.setEnabled(false);
             textCornPizza.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkCornPizzaActionPerformed
 
     private void checkNormalBurgerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkNormalBurgerActionPerformed
-if(checkNormalBurger.isSelected())
-        {
+        if (checkNormalBurger.isSelected()) {
             textNormalBurger.setEnabled(true);
             textNormalBurger.requestFocus();
             textNormalBurger.setText("");
-        }
-        else
-        {
+        } else {
             textNormalBurger.setEnabled(false);
             textNormalBurger.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkNormalBurgerActionPerformed
 
     private void checkMayoneseBurgerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkMayoneseBurgerActionPerformed
-if(checkMayoneseBurger.isSelected())
-        {
+        if (checkMayoneseBurger.isSelected()) {
             textMayoneseBurger.setEnabled(true);
             textMayoneseBurger.requestFocus();
             textMayoneseBurger.setText("");
-        }
-        else
-        {
+        } else {
             textMayoneseBurger.setEnabled(false);
             textMayoneseBurger.setText("0");
         }        // TODO add your handling code here:
     }//GEN-LAST:event_checkMayoneseBurgerActionPerformed
 
     private void buttonTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTotalActionPerformed
-        // TODO add your handling code here:
-        String selectedMode = (String) CashMethods.getSelectedItem() ;
-        itemDetails[0] = Integer.parseInt(textPepsi.getText());
-        itemDetails[1] = Integer.parseInt(textFanta.getText());
-        itemDetails[2] = Integer.parseInt(textDew.getText());
-       itemDetails[3] = Integer.parseInt(textNormalMaggie.getText());
-       itemDetails[4] = Integer.parseInt(textCheeseMaggie.getText());
-       itemDetails[5] = Integer.parseInt(textWater.getText());
-       itemDetails[6] = Integer.parseInt(textTea.getText());
-       itemDetails[7] = Integer.parseInt(textCoffee.getText());
-       itemDetails[8] = Integer.parseInt(textVanillaIceCream.getText());
-       itemDetails[9] = Integer.parseInt(textChocklateIceCream.getText());
-       itemDetails[10] = Integer.parseInt(textMelloJelloIcecream.getText());
-       itemDetails[11] = Integer.parseInt(textNormalPizza.getText());
-       itemDetails[12] = Integer.parseInt(textCheesePizza.getText());
-       itemDetails[13] = Integer.parseInt(textCornPizza.getText());
-       itemDetails[14] = Integer.parseInt(textNormalBurger.getText());
-       itemDetails[15] = Integer.parseInt(textMayoneseBurger.getText());
-       total = (itemDetails[0]*pepsi)+(itemDetails[1]*fanta)+(itemDetails[2]*dew)+(itemDetails[3]*normal_maggie)+(itemDetails[4]*cheese_maggie)+(itemDetails[5]*water)+(itemDetails[6]*tea)+(itemDetails[7]*coffee)+(itemDetails[8]*vanilla_icecream)+(itemDetails[9]*chocklate_icecream)+(itemDetails[10]*mellojello_icecream)+(itemDetails[11]*normal_pizza)+(itemDetails[12]*cheese_pizza)+(itemDetails[13]*corn_pizza)+(itemDetails[14]*normal_burger)+(itemDetails[15]*mayonese_burger);
-       tax = (total*tax)/100;
-       if(selectedMode.equals("Cash"))
-       {
-           double cashentered = Double.parseDouble(textCashEntered.getText());
-         if(cashentered >= (total+tax))
-         {
-         textTotalAnswer.setToolTipText("Without Tax is Rs. "+total);
-         total = total + tax ;
-         textTotalAnswer.setText("Rs. "+total);
-         textTaxAnswer.setText("Rs. "+tax);
-         double changereturned = cashentered-total;
-         textChangeAnswer.setText("Rs. "+changereturned);
-         tax = 5;
-         }
-         else
-         {
-             JOptionPane.showMessageDialog(null, "Enter Enough Cash","Fast Food", JOptionPane.OK_OPTION);
-         }
-       }
-       else
-       {
-        textTotalAnswer.setToolTipText("Without Tax is Rs. "+total);
-        total = total + tax ;
-        textTotalAnswer.setText("Rs. "+total);
-         textTaxAnswer.setText("Rs. "+tax);
-        tax = 5;
-       }
+        // TODO add your handling code here;
+        JTextField items[] = {textPepsi, textFanta, textDew, textNormalMaggie, textCheeseMaggie, textWater, textTea, textCoffee, textVanillaIceCream, textChocklateIceCream, textMelloJelloIcecream, textNormalPizza, textCheesePizza, textCornPizza, textNormalBurger, textMayoneseBurger};
+        String selectedMode = (String) CashMethods.getSelectedItem();
+//        itemDetails[0] = Integer.parseInt(textPepsi.getText());
+//        itemDetails[1] = Integer.parseInt(textFanta.getText());
+//        itemDetails[2] = Integer.parseInt(textDew.getText());
+//       itemDetails[3] = Integer.parseInt(textNormalMaggie.getText());
+//       itemDetails[4] = Integer.parseInt(textCheeseMaggie.getText());
+//       itemDetails[5] = Integer.parseInt(textWater.getText());
+//       itemDetails[6] = Integer.parseInt(textTea.getText());
+//       itemDetails[7] = Integer.parseInt(textCoffee.getText());
+//       itemDetails[8] = Integer.parseInt(textVanillaIceCream.getText());
+//       itemDetails[9] = Integer.parseInt(textChocklateIceCream.getText());
+//       itemDetails[10] = Integer.parseInt(textMelloJelloIcecream.getText());
+//       itemDetails[11] = Integer.parseInt(textNormalPizza.getText());
+//       itemDetails[12] = Integer.parseInt(textCheesePizza.getText());
+//       itemDetails[13] = Integer.parseInt(textCornPizza.getText());
+//       itemDetails[14] = Integer.parseInt(textNormalBurger.getText());
+//       itemDetails[15] = Integer.parseInt(textMayoneseBurger.getText());
+//       System.out.println(items[2].getText());
+
+        for (int i = 0; i < items.length; i++) {
+            itemDetails[i] = Integer.parseInt(items[i].getText());
+            total += itemDetails[i] * prices[i];
+        }
+
+//       total = (itemDetails[0]*pepsi)+(itemDetails[1]*fanta)+(itemDetails[2]*dew)+(itemDetails[3]*normal_maggie)+(itemDetails[4]*cheese_maggie)+(itemDetails[5]*water)+(itemDetails[6]*tea)+(itemDetails[7]*coffee)+(itemDetails[8]*vanilla_icecream)+(itemDetails[9]*chocklate_icecream)+(itemDetails[10]*mellojello_icecream)+(itemDetails[11]*normal_pizza)+(itemDetails[12]*cheese_pizza)+(itemDetails[13]*corn_pizza)+(itemDetails[14]*normal_burger)+(itemDetails[15]*mayonese_burger);
+        tax = (total * tax) / 100;
+        if (selectedMode.equals("Cash")) {
+            double cashentered = Double.parseDouble(textCashEntered.getText());
+            if (cashentered >= (total + tax)) {
+                textTotalAnswer.setToolTipText("Without Tax is Rs. " + total);
+                total = total + tax;
+                textTotalAnswer.setText("Rs. " + total);
+                textTaxAnswer.setText("Rs. " + tax);
+                double changereturned = cashentered - total;
+                textChangeAnswer.setText("Rs. " + changereturned);
+                tax = 5;
+                total = 0;
+                submitButton.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Enter Enough Cash", "Fast Food", JOptionPane.OK_OPTION);
+                total = 0;
+            }
+        } else {
+            textTotalAnswer.setToolTipText("Without Tax is Rs. " + total);
+            total = total + tax;
+            textTotalAnswer.setText("Rs. " + total);
+            textTaxAnswer.setText("Rs. " + tax);
+            tax = 5;
+            total = 0;
+            submitButton.setEnabled(true);
+        }
     }//GEN-LAST:event_buttonTotalActionPerformed
 
     private void textTotalAnswerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textTotalAnswerActionPerformed
@@ -1513,6 +1499,19 @@ if(checkMayoneseBurger.isSelected())
     private void CashMethodsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CashMethodsActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CashMethodsActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        try {
+            // TODO add your handling code here:
+            String payment_type = (String) CashMethods.getSelectedItem();
+            System.out.print(payment_type);
+            Jdbc obj = new Jdbc();
+            obj.connect();
+            obj.createorder(payment_type);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }//GEN-LAST:event_submitButtonActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -1581,6 +1580,7 @@ if(checkMayoneseBurger.isSelected())
     private javax.swing.JPanel panelForDrinksAndIceCreams;
     private javax.swing.JPanel panelForPizzaAndBurger;
     private javax.swing.JPanel panelForSoftDrinksAndMaggie;
+    private javax.swing.JButton submitButton;
     private javax.swing.JTextField textCashEntered;
     private javax.swing.JTextField textChange;
     private javax.swing.JTextField textChangeAnswer;
@@ -1605,4 +1605,5 @@ if(checkMayoneseBurger.isSelected())
     private javax.swing.JTextField textVanillaIceCream;
     private javax.swing.JTextField textWater;
     // End of variables declaration//GEN-END:variables
+
 }
