@@ -3,52 +3,121 @@ package Fast_Food;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.sql.*;
+import java.util.Arrays;
+//    int rs = st.executeUpdate(query);
 
-//    
-//    
-////    int rs = st.executeUpdate(query);
 /**
  *
  * @author Aayush Wadhwani
  */
 class Jdbc {
-    
+
     Connection con = null;
+    Statement st = null;
+
     void connect() throws Exception {
         String url = "jdbc:mysql://localhost:3306/restaurant";
         String uname = "root1";
         String pass = "Root1@root1";
         con = DriverManager.getConnection(url, uname, pass);
     }
-    void createorder(String payment_type){
-        try{
-//            String status = ;
-            String query = String.format("insert into user_order(order_date,payment_status) values(CURDATE(),'%s')",payment_type);
-            Statement st = con.createStatement();
+
+    void createorder(String payment_type, OrderItems[] orderItems) {
+        try {
+//          String status = ;
+            String query = String.format("insert into user_order(order_date,payment_status) values(CURDATE(),'%s')", payment_type);
+            st = con.createStatement();
             int rs = st.executeUpdate(query);
-            System.out.println(rs+" rows effected");
+            System.out.println(rs + " rows effected");
+            getOrderItems(orderItems);
+        } catch (Exception ex) {
+            System.out.println(ex);
         }
-        catch(Exception ex){
+    }
+
+    void getOrderItems(OrderItems[] orderItems) {
+        int userid = getOrderId(), i = 0, count = 0;
+        int[] itemid;
+        while (i<16 && !orderItems[i].itemName.equals("")) {
+            count++;
+            i++;
+        }
+        itemid = new int[count];
+        for (int j = 0; j < itemid.length; j++) {
+            try {
+                String query = String.format("select item_id from item where item_name='%s'", orderItems[j].itemName);
+                st = con.createStatement();
+                ResultSet rs = st.executeQuery(query);
+                rs.next();
+                itemid[j] = rs.getInt(1);
+            } catch (Exception ex) {
+                System.out.print(ex);
+            }
+        }
+        insertOrderItem(itemid, userid,orderItems);
+        System.out.println(Arrays.toString(itemid));
+    }
+    
+    void insertOrderItem(int[] itemid,int orderid,OrderItems[] orderItems){
+        for(int i=0; i<itemid.length; i++){
+            try{
+            String query = String.format("insert into order_items(order_id,item_id,quantity) values(%d,%d,%d)",orderid,itemid[i],orderItems[i].quantity);
+            st = con.createStatement();
+            int rs = st.executeUpdate(query);
+            }catch(Exception ex){
+                System.out.println(ex);
+            }
+        }
+    }
+
+    ResultSet getItems() {
+        try {
+            String query = "Select item_name from item";
+            st = con.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            return rs;
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        return null;
+    }
+    
+    int getOrderId() {
+        try {
+            String query = "Select max(id) from user_order";
+            st = con.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            rs.next();
+            return rs.getInt(1);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        return -1;
+    }
+
+    void disconnect() {
+        try {
+            st.close();
+            con.close();
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }
 }
 
+class OrderItems {
+
+    int quantity = 0;
+    String itemName = "";
+}
 
 public class FastFood extends javax.swing.JFrame {
-
-//    double pepsi = 50, fanta = 45, dew = 60;
-//    double normal_maggie = 30, cheese_maggie = 45;
-//    double water = 20, tea = 15, coffee = 20;
-//    double vanilla_icecream = 40, chocklate_icecream = 45, mellojello_icecream = 55;
-//    double normal_pizza = 130, cheese_pizza = 180, corn_pizza = 160;
-//    double normal_burger = 40, mayonese_burger = 50;
     double tax = 5, total, change, cost;
     int itemDetails[] = new int[16];
-
+    OrderItems[] orderItems = new OrderItems[16];
     double prices[] = {50, 45, 60, 30, 45, 20, 15, 20, 40, 45, 55, 130, 180, 160, 40, 50};
-    
-     public FastFood() {
+
+    public FastFood() {
         initComponents();
     }
 
@@ -1439,31 +1508,42 @@ public class FastFood extends javax.swing.JFrame {
     private void buttonTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTotalActionPerformed
         // TODO add your handling code here;
         JTextField items[] = {textPepsi, textFanta, textDew, textNormalMaggie, textCheeseMaggie, textWater, textTea, textCoffee, textVanillaIceCream, textChocklateIceCream, textMelloJelloIcecream, textNormalPizza, textCheesePizza, textCornPizza, textNormalBurger, textMayoneseBurger};
-        String selectedMode = (String) CashMethods.getSelectedItem();
-//        itemDetails[0] = Integer.parseInt(textPepsi.getText());
-//        itemDetails[1] = Integer.parseInt(textFanta.getText());
-//        itemDetails[2] = Integer.parseInt(textDew.getText());
-//       itemDetails[3] = Integer.parseInt(textNormalMaggie.getText());
-//       itemDetails[4] = Integer.parseInt(textCheeseMaggie.getText());
-//       itemDetails[5] = Integer.parseInt(textWater.getText());
-//       itemDetails[6] = Integer.parseInt(textTea.getText());
-//       itemDetails[7] = Integer.parseInt(textCoffee.getText());
-//       itemDetails[8] = Integer.parseInt(textVanillaIceCream.getText());
-//       itemDetails[9] = Integer.parseInt(textChocklateIceCream.getText());
-//       itemDetails[10] = Integer.parseInt(textMelloJelloIcecream.getText());
-//       itemDetails[11] = Integer.parseInt(textNormalPizza.getText());
-//       itemDetails[12] = Integer.parseInt(textCheesePizza.getText());
-//       itemDetails[13] = Integer.parseInt(textCornPizza.getText());
-//       itemDetails[14] = Integer.parseInt(textNormalBurger.getText());
-//       itemDetails[15] = Integer.parseInt(textMayoneseBurger.getText());
-//       System.out.println(items[2].getText());
+        String itemNames[] = new String[16];
 
-        for (int i = 0; i < items.length; i++) {
+        try {
+            Jdbc obj = new Jdbc();
+            obj.connect();
+            ResultSet rs = obj.getItems();
+            int j = 0;
+            if (rs != null) {
+                while (rs.next()) {
+                    itemNames[j] = rs.getString(1);
+                    j++;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        String selectedMode = (String) CashMethods.getSelectedItem();
+        for (int i = 0, k = 0; i < items.length; i++) {
+            orderItems[i] = new OrderItems();
+            if (!((items[i].getText()).equals("0"))) {
+                if (((items[i].getText()).equals(""))) {
+                    items[i].setText("1");
+                    orderItems[k].quantity = 1;
+                } else {
+                    orderItems[k].quantity = Integer.parseInt(items[i].getText());
+                }
+                orderItems[k].itemName = itemNames[i];
+                k++;
+            }
             itemDetails[i] = Integer.parseInt(items[i].getText());
             total += itemDetails[i] * prices[i];
         }
 
-//       total = (itemDetails[0]*pepsi)+(itemDetails[1]*fanta)+(itemDetails[2]*dew)+(itemDetails[3]*normal_maggie)+(itemDetails[4]*cheese_maggie)+(itemDetails[5]*water)+(itemDetails[6]*tea)+(itemDetails[7]*coffee)+(itemDetails[8]*vanilla_icecream)+(itemDetails[9]*chocklate_icecream)+(itemDetails[10]*mellojello_icecream)+(itemDetails[11]*normal_pizza)+(itemDetails[12]*cheese_pizza)+(itemDetails[13]*corn_pizza)+(itemDetails[14]*normal_burger)+(itemDetails[15]*mayonese_burger);
+        for (int i = 0; i < 16; i++) {
+            System.out.println(orderItems[i].itemName + " : " + orderItems[i].quantity);
+        }
         tax = (total * tax) / 100;
         if (selectedMode.equals("Cash")) {
             double cashentered = Double.parseDouble(textCashEntered.getText());
@@ -1507,7 +1587,8 @@ public class FastFood extends javax.swing.JFrame {
             System.out.print(payment_type);
             Jdbc obj = new Jdbc();
             obj.connect();
-            obj.createorder(payment_type);
+            obj.createorder(payment_type,orderItems);
+            obj.disconnect();
         } catch (Exception ex) {
             System.out.println(ex);
         }

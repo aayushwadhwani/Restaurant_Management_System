@@ -1,7 +1,7 @@
 create table user_order(
     id int not null auto_increment primary key,
     order_date date,
-    payment_status varchar(30),
+    payment_status varchar(30)
 )
 
 create table item(
@@ -35,3 +35,8 @@ insert into item(item_name,item_price) VALUES('CornPizza',160);
 insert into item(item_name,item_price) VALUES('NormalBurger',40);
 insert into item(item_name,item_price) VALUES('NormalBurger',50);
 
+
+select max(id) from user_order;
+
+ALTER TABLE order_items
+ALTER column id auto_increment ;
